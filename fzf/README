@@ -1,0 +1,38 @@
+Ripgrep integration
+Using fzf as the secondary filter
+Requires bat
+Requires Ripgrep
+fzf is pretty fast for filtering a list that you will rarely have to think about its performance. But it is not the right tool for searching for text inside many large files, and in that case you should definitely use something like Ripgrep.
+
+In the next example, Ripgrep is the primary filter that searches for the given text in files, and fzf is used as the secondary fuzzy filter that adds interactivity to the workflow. And we use bat to show the matching line in the preview window.
+
+This is a bash script and it will not run as expected on other non-compliant shells. To avoid the compatibility issue, let's save this snippet as a script file called rfv.
+
+```bash
+#!/usr/bin/env bash
+
+# 1. Search for text in files using Ripgrep
+# 2. Interactively narrow down the list using fzf
+# 3. Open the file in Vim
+IFS=: read -ra selected < <(
+  rg --color=always --line-number --no-heading --smart-case "${*:-}" |
+    fzf --ansi \
+        --color "hl:-1:underline,hl+:-1:underline:reverse" \
+        --delimiter : \
+        --preview 'bat --color=always {1} --highlight-line {2}' \
+        --preview-window 'up,60%,border-bottom,+{2}+3/3,~3'
+)
+[ -n "${selected[0]}" ] && vim "${selected[0]}" "+${selected[1]}"
+```
+
+And run it with an initial query string.
+
+# Make the script executable
+```bash
+chmod +x rfv
+```
+
+# Run it with the initial query "algo"
+```bash
+./rfv algo
+```
