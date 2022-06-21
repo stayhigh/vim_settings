@@ -1,4 +1,10 @@
-Ripgrep integration
+## install essential packages
+```bash
+./fzf_installer.sh
+```
+
+
+## Ripgrep integration
 Using fzf as the secondary filter
 Requires bat
 Requires Ripgrep
